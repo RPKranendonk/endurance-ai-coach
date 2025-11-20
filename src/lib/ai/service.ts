@@ -112,7 +112,7 @@ export class AIService {
     `;
 
         const { text } = await generateText({
-            model,
+            model: model as any,
             system: "You are a helpful assistant that outputs strictly JSON.",
             prompt: systemPrompt + "\n\nUser Request: " + context + "\n\nProfile: " + JSON.stringify(userProfile)
         });
@@ -155,7 +155,7 @@ export class AIService {
       `;
 
         const { text } = await generateText({
-            model,
+            model: model as any,
             system: "You are a helpful assistant that outputs strictly JSON.",
             prompt
         });
