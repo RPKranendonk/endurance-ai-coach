@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
 
@@ -27,7 +27,7 @@ export default function OnboardingPage() {
         handleSubmit,
         formState: { errors },
     } = useForm<OnboardingFormValues>({
-        resolver: zodResolver(onboardingSchema),
+        // resolver: zodResolver(onboardingSchema),
         defaultValues: {
             primarySport: "run",
             experienceLevel: "intermediate",
@@ -37,6 +37,17 @@ export default function OnboardingPage() {
     });
 
     const onSubmit = async (data: OnboardingFormValues) => {
+        console.log("Form submitted:", data);
+
+        // Manual Validation
+        try {
+            onboardingSchema.parse(data);
+        } catch (e) {
+            console.error("Validation error:", e);
+            alert("Please check your inputs.");
+            return;
+        }
+
         setIsLoading(true);
         try {
             const response = await fetch("/api/saveUserConfig", {
@@ -56,9 +67,12 @@ export default function OnboardingPage() {
                 }),
             });
 
+            console.log("API Response status:", response.status);
+
             if (!response.ok) throw new Error("Failed to save config");
 
             const result = await response.json();
+            console.log("API Result:", result);
             localStorage.setItem("userId", result.userId); // Simple auth for demo
             router.push("/dashboard");
         } catch (error) {
@@ -67,6 +81,10 @@ export default function OnboardingPage() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const onError = (errors: any) => {
+        console.error("Form validation errors:", errors);
     };
 
     return (
@@ -80,7 +98,7 @@ export default function OnboardingPage() {
                         We need a few details to personalize your plan.
                     </p>
                 </div>
-                <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit, onError)}>
                     <div className="rounded-md shadow-sm -space-y-px">
                         {/* Personal Info */}
                         <div className="p-2">

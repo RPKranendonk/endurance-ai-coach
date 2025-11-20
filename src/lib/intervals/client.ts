@@ -1,4 +1,4 @@
-import { resolvePaceTarget, formatPace, Zone } from '../training/zones';
+import { resolvePaceTarget, formatPace, Zone, getPaceZoneAsPercent } from '../training/zones';
 
 export class IntervalsClient {
     private apiKey: string;

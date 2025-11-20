@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
-import { resolvePaceTarget, formatPace, resolveHRTarget, Zone } from '@/lib/training/zones';
+import { resolvePaceTarget, formatPace, resolveHRTarget, Zone, resolvePaceRange } from '@/lib/training/zones';
 
 export default function DashboardPage() {
     const router = useRouter();
