@@ -11,12 +11,23 @@ export default function DashboardPage() {
     const [loadingWorkout, setLoadingWorkout] = useState(false);
     const [generatedWorkout, setGeneratedWorkout] = useState<any>(null);
 
+    const [userProfile, setUserProfile] = useState<any>(null);
+
     useEffect(() => {
         const storedId = localStorage.getItem("userId");
         if (!storedId) {
             router.push("/onboarding");
         } else {
             setUserId(storedId);
+            // Fetch user profile
+            fetch(`/api/getUser?userId=${storedId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.user && data.user.profile) {
+                        setUserProfile(data.user.profile);
+                    }
+                })
+                .catch(err => console.error("Failed to fetch user profile", err));
         }
     }, [router]);
 
