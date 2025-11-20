@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
         const aiService = new AIService(user.aiProvider as any, apiKey);
 
         // Generate Plan
-        const planJson = await aiService.generateMacroPlan(user.profile, goal);
+        const planJson = await aiService.generateMacroPlan(user.profile, goal, []);
 
         // Save to DB
         const plan = await prisma.plan.create({
