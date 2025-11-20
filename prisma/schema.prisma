@@ -1,0 +1,112 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Encrypted API Keys
+  intervalsApiKey String?
+  aiProvider      String  @default("openai") // openai, gemini, claude
+  aiApiKey        String?
+
+  profile   AthleteProfile?
+  plans     Plan[]
+  dailyLogs DailyLog[]
+}
+
+model AthleteProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Demographics
+  name        String?
+  dateOfBirth DateTime?
+  gender      String?
+
+  // Training Config
+  primarySport     String // run, bike, both
+  experienceLevel  String // novice, intermediate, advanced
+  availableHours   Float
+  longRunDay       String?
+  longRideDay      String?
+  strengthDays     Int    @default(2)
+  yogaDays         Int    @default(2)
+
+  // Training Metrics
+  thresholdPace  Int?   // Seconds per km (e.g. 240 for 4:00/km)
+  lthr           Int?   // Lactate Threshold Heart Rate (bpm)
+
+  // Zones (Stored as JSON)
+  hrZones    String? // JSON string of zones
+  powerZones String? // JSON string of zones
+  paceZones  String? // JSON string of zones
+
+  // Goals
+  primaryGoal     String?
+  goalDate        DateTime?
+  goalDescription String?
+}
+
+model Plan {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate DateTime
+  endDate   DateTime
+  status    String   @default("active") // active, completed, archived
+
+  // Macro Plan Structure (JSON)
+  macroPlan String // JSON array of weeks with focus
+
+  workouts Workout[]
+}
+
+model Workout {
+  id     String @id @default(cuid())
+  planId String
+  plan   Plan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  date        DateTime
+  title       String
+  description String?
+  sport       String // run, bike, strength, yoga
+  type        String // recovery, endurance, tempo, threshold, vo2max, anaerobic
+  durationMin Int
+
+  // Structured Workout Data (JSON)
+  structure String? // JSON for intervals.icu builder
+
+  // Status
+  status         String  @default("planned") // planned, completed, skipped
+  intervalsId    String? // ID from intervals.icu
+  completionData String? // JSON snapshot of what was actually done
+}
+
+model DailyLog {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  date DateTime @default(now())
+
+  // Metrics
+  hrv           Float?
+  rhr           Int?
+  sleepQuality  Int? // 1-5
+  stress        Int? // 1-5
+  soreness      Int? // 1-5
+  fatigue       Int? // 1-5
+  mood          Int? // 1-5
+  injuryStatus  String?
+  notes         String?
+}
