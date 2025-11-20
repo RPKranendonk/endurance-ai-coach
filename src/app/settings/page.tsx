@@ -12,6 +12,8 @@ const settingsSchema = z.object({
     primarySport: z.enum(["run", "bike", "both"]),
     experienceLevel: z.enum(["novice", "intermediate", "advanced"]),
     availableHours: z.number().min(1).max(30),
+    thresholdPace: z.number().optional(),
+    lthr: z.number().optional(),
     intervalsApiKey: z.string().optional(), // Optional on update
     aiProvider: z.enum(["openai", "gemini", "claude"]),
     aiApiKey: z.string().optional(), // Optional on update
@@ -136,7 +138,7 @@ export default function SettingsPage() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Weekly Training Hours</label>
                             <input
-                                {...register("weeklyHours", { valueAsNumber: true })}
+                                {...register("availableHours", { valueAsNumber: true })}
                                 type="number"
                                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
                             />
@@ -175,53 +177,54 @@ export default function SettingsPage() {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Goals</label>
                         </div>
-                        {/* API Keys (Optional updates) */}
-                        <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-                            <h3 className="text-sm font-bold mb-4">Update Integrations (Leave blank to keep current)</h3>
-                            <div className="space-y-4">
+                    </div>
+                    {/* API Keys (Optional updates) */}
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <h3 className="text-sm font-bold mb-4">Update Integrations (Leave blank to keep current)</h3>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Intervals.icu API Key</label>
+                                <input
+                                    {...register("intervalsApiKey")}
+                                    type="password"
+                                    placeholder="••••••••"
+                                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
+                                />
+                            </div>
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Intervals.icu API Key</label>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI Provider</label>
+                                    <select
+                                        {...register("aiProvider")}
+                                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
+                                    >
+                                        <option value="openai">OpenAI</option>
+                                        <option value="gemini">Google Gemini</option>
+                                        <option value="claude">Anthropic Claude</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI API Key</label>
                                     <input
-                                        {...register("intervalsApiKey")}
+                                        {...register("aiApiKey")}
                                         type="password"
                                         placeholder="••••••••"
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
                                     />
                                 </div>
-                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI Provider</label>
-                                        <select
-                                            {...register("aiProvider")}
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
-                                        >
-                                            <option value="openai">OpenAI</option>
-                                            <option value="gemini">Google Gemini</option>
-                                            <option value="claude">Anthropic Claude</option>
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">AI API Key</label>
-                                        <input
-                                            {...register("aiApiKey")}
-                                            type="password"
-                                            placeholder="••••••••"
-                                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm dark:bg-zinc-700 dark:border-zinc-600 p-2"
-                                        />
-                                    </div>
-                                </div>
                             </div>
                         </div>
+                    </div>
 
-                        <div className="flex justify-end">
-                            <button
-                                type="submit"
-                                disabled={isLoading}
-                                className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
-                            >
-                                {isLoading ? "Saving..." : "Save Changes"}
-                            </button>
-                        </div>
+                    <div className="flex justify-end">
+                        <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+                        >
+                            {isLoading ? "Saving..." : "Save Changes"}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>

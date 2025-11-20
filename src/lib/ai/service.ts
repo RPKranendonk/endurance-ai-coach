@@ -111,16 +111,28 @@ export class AIService {
       - Each block has: "type" (warmup, interval, recovery, cooldown), "duration_min", "intensity" (description), "zone" (Z1-Z5), "zone_position" (0.0-1.0).
     `;
 
-        return JSON.parse(jsonStr);
-    } catch(e) {
-        console.error("Failed to parse AI response", text);
-        throw new Error("AI response was not valid JSON");
+        const { text } = await generateText({
+            model,
+            system: "You are a helpful assistant that outputs strictly JSON.",
+            prompt: systemPrompt + "\n\nUser Request: " + context + "\n\nProfile: " + JSON.stringify(userProfile)
+        });
+
+        try {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start === -1 || end === -1) throw new Error("No JSON found");
+            const jsonStr = text.substring(start, end + 1);
+            return JSON.parse(jsonStr);
+        } catch (e) {
+            console.error("Failed to parse AI response", text);
+            throw new Error("AI response was not valid JSON");
+        }
     }
-}
+
 
     async generateMacroPlan(userProfile: any, goal: any, history: any) {
-    const model = this.getModel();
-    const prompt = `
+        const model = this.getModel();
+        const prompt = `
         Create a macro training plan for an athlete.
         
         Profile: ${JSON.stringify(userProfile)}
@@ -142,21 +154,21 @@ export class AIService {
         Output strictly JSON.
       `;
 
-    const { text } = await generateText({
-        model,
-        system: "You are a helpful assistant that outputs strictly JSON.",
-        prompt
-    });
+        const { text } = await generateText({
+            model,
+            system: "You are a helpful assistant that outputs strictly JSON.",
+            prompt
+        });
 
-    try {
-        const start = text.indexOf('{');
-        const end = text.lastIndexOf('}');
-        if (start === -1 || end === -1) throw new Error("No JSON found");
-        const jsonStr = text.substring(start, end + 1);
-        return JSON.parse(jsonStr);
-    } catch (e) {
-        console.error("Failed to parse AI response", text);
-        throw new Error("AI response was not valid JSON");
+        try {
+            const start = text.indexOf('{');
+            const end = text.lastIndexOf('}');
+            if (start === -1 || end === -1) throw new Error("No JSON found");
+            const jsonStr = text.substring(start, end + 1);
+            return JSON.parse(jsonStr);
+        } catch (e) {
+            console.error("Failed to parse AI response", text);
+            throw new Error("AI response was not valid JSON");
+        }
     }
-}
 }
