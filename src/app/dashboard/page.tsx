@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import WeeklyCalendar from "@/components/WeeklyCalendar";
-import { resolvePaceTarget, formatPace, resolveHRTarget, Zone, resolvePaceRange } from '@/lib/training/zones';
+import { resolvePaceTarget, formatPace, resolveHRTarget, resolvePaceRange, type Zone } from '@/lib/training/zones';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -138,7 +138,7 @@ export default function DashboardPage() {
                                 </div>
                                 <p className="text-gray-700 dark:text-gray-300 mb-4">{generatedWorkout.description}</p>
 
-                                import {resolvePaceTarget, formatPace, resolveHRTarget, resolvePaceRange, Zone} from '@/lib/training/zones';
+
 
                                 // ...
 

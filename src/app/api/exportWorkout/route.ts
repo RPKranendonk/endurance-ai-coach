@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            include: { athleteProfile: true }
+            include: { profile: true }
         });
 
         if (!user || !user.intervalsApiKey) {
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         const targetDate = date || new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
         const result = await client.uploadWorkout(workout, targetDate, {
-            thresholdPace: user.athleteProfile?.thresholdPace
+            thresholdPace: user.profile?.thresholdPace
         });
 
         return NextResponse.json({ success: true, result });
